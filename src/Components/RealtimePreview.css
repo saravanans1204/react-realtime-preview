@@ -1,79 +1,258 @@
-/*
+/* 
  * Modern Light Mode Theme
  */
 
 .realtime-preview-container {
-    /* Set the clean UI font */
     font-family: 'Inter', sans-serif;
-    
-    /* Light theme colors */
-    background-color: #ffffff; /* Clean white background */
-    color: #333333; /* Dark gray text for readability */
-    border: 1px solid #e0e0e0; /* Subtle border */
-
-    /* Modern spacing and shape */
-    border-radius: 12px; /* Softer corners */
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
     height: 80vh;
-    width: 600px; /* Using a more standard width */
-    padding: 2rem; /* Generous padding */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Soft, modern shadow */
-    
-    /* Ensure scrolling works */
-}
-
-.scroll{
-    overflow-y: auto;
-}
-
-.Turn{
-   overflow-y:hidden; 
+    width: 60vw;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
 }
 
 .title-container {
     display: flex;
     justify-content: flex-start;
     width: 100%;
-    margin-bottom: 1.5rem; /* Space below title */
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
 }
 
 .title {
     font-size: 1.15rem;
     font-weight: 600;
-    color: #666666; /* Subdued title color */
+    color: #666666;
     text-align: left;
-    
-    /* Modern, clean look */
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    
-    /* Remove the old border */
     border-bottom: none;
     padding-bottom: 0;
     width: auto;
 }
 
-/*
- * This styles each individual page div.
- */
+.preview-content-area {
+    flex-grow: 1; 
+    overflow-y: auto; /* Default for 'scroll' mode */
+}
+
 .realtime-preview-page {
-    /* Use the "generated" code font */
     font-family: 'Roboto Mono', monospace;
     font-size: 0.9rem;
-    line-height: 1.7;
-    color: #222222; /* Main content text */
-
-    /* Add a "page separator" */
-    padding-top: 1.5rem;
-    border-top: 1px dashed #eeeeee; /* Very light separator */
-    
-    /* This ensures your newlines (\n) are respected */
-    white-space: pre-wrap;
-    /* This ensures long words don't overflow */
+    line-height: 1.5;
+    color: #222222;
+    padding: 0.8rem; 
+    text-align: left;
+     white-space: pre-wrap;
     word-wrap: break-word;
 }
 
-/* Style the very first page to not have a separator above it */
-.realtime-preview-page:first-of-type {
-    border-top: none;
-    padding-top: 0;
+
+/* =================================================== */
+
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: #555;
 }
+
+.pagination-controls button {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.pagination-controls button:hover {
+    background-color: #e9e9e9;
+}
+
+.pagination-controls button:disabled {
+    background-color: #f9f9f9;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+/* Scrollbar Styles */
+.preview-content-area {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #ffffff;
+}
+
+.preview-content-area::-webkit-scrollbar {
+  width: 10px;
+}
+
+.preview-content-area::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.preview-content-area::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+}
+
+.preview-content-area::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* /////////////////////Inlined ///////////////////////// */
+
+
+ .realtime-preview-page h1 {
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 2em;
+    font-weight: 900;
+    margin: 1.2em 0 0.6em 0;
+    color: #111;
+    line-height: 1.3;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.3em;
+    letter-spacing: -0.02em;
+  }
+
+  .realtime-preview-page h2 {
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.5em;
+    font-weight: 700;
+    margin: 1em 0 0.5em 0;
+    color: #222;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .realtime-preview-page h3 {
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.25em;
+    font-weight: 700;
+    margin: 0.8em 0 0.4em 0;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .realtime-preview-page h4 {
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1.1em;
+    font-weight: 700;
+    margin: 0.7em 0 0.3em 0;
+    color: #444;
+  }
+
+  .realtime-preview-page h5,
+  .realtime-preview-page h6 {
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 1em;
+    font-weight: 700;
+    margin: 0.6em 0 0.3em 0;
+    color: #555;
+  }
+
+  .realtime-preview-page ul,
+  .realtime-preview-page ol {
+    margin: 0.5em 0;
+    padding-left: 2em;
+  }
+
+  .realtime-preview-page ul {
+    list-style-type: disc;
+  }
+
+  .realtime-preview-page ol {
+    list-style-type: decimal;
+  }
+
+  .realtime-preview-page li {
+    margin: 0.2em 0;
+    line-height: 1.5;
+  }
+
+  .realtime-preview-page li > ul,
+  .realtime-preview-page li > ol {
+    margin: 0.15em 0;
+  }
+
+  .realtime-preview-page p {
+    margin: 0.4em 0;
+    line-height: 1.6;
+  }
+
+  .realtime-preview-page strong {
+    font-weight: 600;
+    color: #111;
+  }
+
+  .realtime-preview-page em {
+    font-style: italic;
+  }
+
+  .realtime-preview-page code {
+    background-color: #f5f5f5;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #d73a49;
+  }
+
+  .realtime-preview-page pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 1em;
+    margin: 1em 0;
+    overflow-x: auto;
+  }
+
+  .realtime-preview-page pre code {
+    background-color: transparent;
+    padding: 0;
+    color: #24292e;
+    font-size: 0.85em;
+  }
+
+  .realtime-preview-page blockquote {
+    border-left: 4px solid #dfe2e5;
+    padding-left: 1em;
+    margin: 1em 0;
+    color: #6a737d;
+    font-style: italic;
+  }
+
+  .realtime-preview-page hr {
+    border: none;
+    border-top: 2px solid #e1e4e8;
+    margin: 2em 0;
+  }
+
+  .realtime-preview-page a {
+    color: #0366d6;
+    text-decoration: none;
+  }
+
+  .realtime-preview-page a:hover {
+    text-decoration: underline;
+  }
+
+  .realtime-preview-page br {
+    display: block;
+    content: "";
+    margin-top: 0.3em;
+  }
