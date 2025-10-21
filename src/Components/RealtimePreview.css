@@ -1,0 +1,79 @@
+/*
+ * Modern Light Mode Theme
+ */
+
+.realtime-preview-container {
+    /* Set the clean UI font */
+    font-family: 'Inter', sans-serif;
+    
+    /* Light theme colors */
+    background-color: #ffffff; /* Clean white background */
+    color: #333333; /* Dark gray text for readability */
+    border: 1px solid #e0e0e0; /* Subtle border */
+
+    /* Modern spacing and shape */
+    border-radius: 12px; /* Softer corners */
+    height: 80vh;
+    width: 600px; /* Using a more standard width */
+    padding: 2rem; /* Generous padding */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Soft, modern shadow */
+    
+    /* Ensure scrolling works */
+}
+
+.scroll{
+    overflow-y: auto;
+}
+
+.Turn{
+   overflow-y:hidden; 
+}
+
+.title-container {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 1.5rem; /* Space below title */
+}
+
+.title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #666666; /* Subdued title color */
+    text-align: left;
+    
+    /* Modern, clean look */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    
+    /* Remove the old border */
+    border-bottom: none;
+    padding-bottom: 0;
+    width: auto;
+}
+
+/*
+ * This styles each individual page div.
+ */
+.realtime-preview-page {
+    /* Use the "generated" code font */
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #222222; /* Main content text */
+
+    /* Add a "page separator" */
+    padding-top: 1.5rem;
+    border-top: 1px dashed #eeeeee; /* Very light separator */
+    
+    /* This ensures your newlines (\n) are respected */
+    white-space: pre-wrap;
+    /* This ensures long words don't overflow */
+    word-wrap: break-word;
+}
+
+/* Style the very first page to not have a separator above it */
+.realtime-preview-page:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
