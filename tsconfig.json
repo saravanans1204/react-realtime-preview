@@ -1,7 +1,17 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "declaration": true, // Generate .d.ts files
+    "outDir": "./dist", // Output directory for compiled files
+    "strict": true,
+    "jsx": "react-jsx", // For React with modern JSX
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"], // Include all files in the src directory
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx"] // Exclude unnecessary files
 }
