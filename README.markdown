@@ -77,6 +77,12 @@ function App() {
 export default App;
 ```
 
+Below is a screenshot of the `react-realtime-preview` component in action, showcasing the paginated view with streaming text:
+
+![Realtime Preview UI](https://github.com/saravanans1204/react-realtime-preview/ui.png)
+
+*Note*: Save the screenshot in your repository under `screenshots/preview-ui.png` and update the path if needed.
+
 ## Props
 
 | Prop              | Type             | Default       | Description                                      |
