@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef,useMemo,useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import './RealtimePreview.css';
+import MarkdownIt from 'markdown-it';
+import Shiki from '@shikijs/markdown-it';
 
 // --- Type Definitions ---
-type mode = "scroll" | "Turn";
+type Mode = "scroll" | "Turn";
 
 export interface RealtimePreviewProps {
   /**
@@ -23,7 +25,7 @@ export interface RealtimePreviewProps {
    * - `Turn`: Pages are viewed one at a time with controls.
    * @default "scroll"
    */
-  mode?: mode;
+  mode?: Mode;
 
   /**
    * Optional CSS class to apply to the main container.
@@ -35,124 +37,18 @@ export interface RealtimePreviewProps {
    */
   pageClassName?: string;
 
-/** Callback fired when page changes in turn mode */
+  /** Callback fired when page changes in turn mode */
   onPageChange?: (page: number, totalPages: number) => void;
-  
-  /** Enable smooth scrolling animations */
+
+  /** Enable smooth scrolling animations. Defaults to false. */
   smoothScroll?: boolean;
 }
 
+// --- Debounce Constants ---
+const FINALIZE_DEBOUNCE_MS = 500;
+const SCROLL_DEBOUNCE_MS = 150;
 
-
-const parseMarkdown = (text: string): string => {
-  if (!text) return '';
-  
-  let html = text;
-  
-  // Escape existing HTML to prevent injection
-  html = html
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-  
-  html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-  
-  // Inline code (`code`)
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
-  // Headers (must be at start of line)
-  html = html.replace(/^######\s+(.*)$/gim, '<h6>$1</h6>');
-  html = html.replace(/^#####\s+(.*)$/gim, '<h5>$1</h5>');
-  html = html.replace(/^####\s+(.*)$/gim, '<h4>$1</h4>');
-  html = html.replace(/^###\s+(.*)$/gim, '<h3>$1</h3>');
-  html = html.replace(/^##\s+(.*)$/gim, '<h2>$1</h2>');
-  html = html.replace(/^#\s+(.*)$/gim, '<h1>$1</h1>');
-  
-  // Horizontal rules
-  html = html.replace(/^---$/gim, '<hr>');
-  html = html.replace(/^\*\*\*$/gim, '<hr>');
-  
-  // Blockquotes
-  html = html.replace(/^>\s+(.*)$/gim, '<blockquote>$1</blockquote>');
-  
-  // Bold (must come before italic to avoid conflicts)
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
-  
-  // Italic
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  html = html.replace(/_(.+?)_/g, '<em>$1</em>');
-  
-  // Links [text](url)
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  
-  // Process lists more carefully
-  const lines = html.split('\n');
-  const processedLines: string[] = [];
-  let inUnorderedList = false;
-  let inOrderedList = false;
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmedLine = line.trim();
-    
-    // Unordered list items
-    if (/^[-*+]\s+/.test(trimmedLine)) {
-      if (!inUnorderedList) {
-        processedLines.push('<ul>');
-        inUnorderedList = true;
-      }
-      const content = trimmedLine.replace(/^[-*+]\s+/, '');
-      processedLines.push(`<li>${content}</li>`);
-    } 
-    // Ordered list items
-    else if (/^\d+\.\s+/.test(trimmedLine)) {
-      if (!inOrderedList) {
-        processedLines.push('<ol>');
-        inOrderedList = true;
-      }
-      const content = trimmedLine.replace(/^\d+\.\s+/, '');
-      processedLines.push(`<li>${content}</li>`);
-    } 
-    // Close lists if not a list item
-    else {
-      if (inUnorderedList) {
-        processedLines.push('</ul>');
-        inUnorderedList = false;
-      }
-      if (inOrderedList) {
-        processedLines.push('</ol>');
-        inOrderedList = false;
-      }
-      processedLines.push(line);
-    }
-  }
-  
-  // Close any remaining open lists
-  if (inUnorderedList) processedLines.push('</ul>');
-  if (inOrderedList) processedLines.push('</ol>');
-  
-  html = processedLines.join('\n');
-  
-  // Paragraphs (double line breaks)
-  html = html.replace(/\n\n+/g, '</p><p>');
-  
-  // Single line breaks
-  html = html.replace(/\n/g, '<br/>');
-  
-  // Wrap content in paragraph tags if needed
-  if (!html.startsWith('<')) {
-    html = `<p>${html}</p>`;
-  }
-  
-  // Clean up empty paragraphs
-  html = html.replace(/<p>\s*<\/p>/g, '');
-  html = html.replace(/<p>\s*<br\/>\s*<\/p>/g, '');
-  
-  return html;
-};
-
-
+// --- Component ---
 export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   text,
   title = "previewer",
@@ -160,83 +56,133 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   containerClassName = '',
   pageClassName = '',
   onPageChange,
+  smoothScroll = false,
 }) => {
-
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [pages, setPages] = useState([]);
-
+  const [isFinalized, setIsFinalized] = useState(false);
+  const [md, setMd] = useState<MarkdownIt | null>(null);
+  const isButtonScrolling = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Initialize MarkdownIt with Shiki asynchronously, loading specific languages
+  useEffect(() => {
+    const initMd = async () => {
+      const shikiPlugin = await Shiki({
+        theme: 'github-light', // Matches the previous github.css aesthetic
+        langs: ['xml', 'css', 'javascript'], // Load required languages
+      });
+      const markdown = MarkdownIt({
+        html: true,
+        linkify: true,
+        typographer: true,
+      }).use(shikiPlugin);
+      setMd(markdown);
+    };
+    initMd();
+  }, []);
 
-  const previousTextLengthRef = useRef(0);
+  const htmlContent = useMemo(() => {
+    if (!md || !text) return '';
+    return md.render(text);
+  }, [md, text]);
 
-  // Memoize parsed HTML to avoid unnecessary re-parsing
-  const htmlContent = useMemo(() => parseMarkdown(text), [text]);
+  // Finalization
+  useEffect(() => {
+    setIsFinalized(false);
 
-  // --- The "Heavy Work" ---
-  // Recalculates total pages whenever the text or container size changes.
+    const finalizeTimer = setTimeout(() => {
+      setIsFinalized(true);
+
+      if (mode === 'Turn' && contentRef.current) {
+        contentRef.current.scrollTo({ top: 0 });
+        setCurrentPage(0);
+      }
+    }, FINALIZE_DEBOUNCE_MS);
+
+    return () => clearTimeout(finalizeTimer);
+  }, [htmlContent, mode]);
+
+  // Auto-scroll during streaming
   useEffect(() => {
     const element = contentRef.current;
-  
+    if (element && !isFinalized) {
+      element.scrollTop = element.scrollHeight;
+    }
+  }, [htmlContent, mode, isFinalized]);
+
+  // Virtual scroll-to-page
+  useEffect(() => {
+    if (mode === 'Turn' && isFinalized && contentRef.current) {
+      isButtonScrolling.current = true;
+
+      const pageHeight = contentRef.current.clientHeight;
+      contentRef.current.scrollTo({
+        top: currentPage * pageHeight,
+        behavior: smoothScroll ? 'smooth' : 'auto'
+      });
+
+      const scrollTimer = setTimeout(() => {
+        isButtonScrolling.current = false;
+      }, 300);
+
+      return () => clearTimeout(scrollTimer);
+    }
+  }, [currentPage, mode, isFinalized, smoothScroll]);
+
+  // On-scroll page update
+  useEffect(() => {
+    const element = contentRef.current;
+    if (mode !== 'Turn' || !isFinalized || !element) return;
+
+    let debounceTimer: number;
+    const handleScroll = () => {
+      if (isButtonScrolling.current) return;
+
+      clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(() => {
+        const pageHeight = element.clientHeight;
+        const scrollTop = element.scrollTop;
+        const calculatedPage = Math.round(scrollTop / pageHeight);
+
+        setCurrentPage(calculatedPage);
+
+      }, SCROLL_DEBOUNCE_MS);
+    };
+
+    element.addEventListener('scroll', handleScroll);
+    return () => {
+      element.removeEventListener('scroll', handleScroll);
+      clearTimeout(debounceTimer);
+    };
+  }, [mode, isFinalized]);
+
+  // Page calculation with ResizeObserver
+  useEffect(() => {
+    const element = contentRef.current;
     if (!element) return;
 
-    // The ResizeObserver watches for size changes
     const observer = new ResizeObserver(() => {
       const viewableHeight = element.clientHeight;
-      
-      
-      // Get the total height of all content
       const totalContentHeight = element.scrollHeight;
-    
-
-
       if (viewableHeight === 0) return;
 
       const calculatedPages = Math.ceil(totalContentHeight / viewableHeight);
-      console.log(calculatedPages);
       setTotalPages(calculatedPages || 1);
-
-      // if(calculatedPages===1){
-      //   setPages((prev)=>prev)
-      // }
-
-
-      
-      if (mode === 'Turn') {
-        setCurrentPage(calculatedPages - 1);
-      }
-  
     });
 
     observer.observe(element);
-
-    // Clean up
     return () => observer.disconnect();
+  }, [htmlContent, mode]);
 
-  }, [text, mode]); 
-
-   useEffect(() => {
+  // onPageChange callback
+  useEffect(() => {
     if (onPageChange && mode === 'Turn') {
       onPageChange(currentPage, totalPages);
     }
   }, [currentPage, totalPages, onPageChange, mode]);
 
-  // --- Page Turning Scroll Effect ---
-  // This scrolls the page when currentPage changes in "Turn" mode
-  useEffect(() => {
-    if (mode === 'Turn' && contentRef.current) {
-      const pageHeight = contentRef.current.clientHeight;
-      contentRef.current.scrollTo({
-        top: currentPage * pageHeight,
-        // behavior: 'smooth' // Smooth scroll!
-      });
-    }
-  }, [currentPage, mode]);
-
-
-
-// Navigation handlers
+  // Navigation handlers
   const goToPrevPage = useCallback(() => {
     setCurrentPage(prev => Math.max(0, prev - 1));
   }, []);
@@ -249,71 +195,66 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
     setCurrentPage(Math.max(0, Math.min(totalPages - 1, page)));
   }, [totalPages]);
 
-
   // Keyboard navigation
   useEffect(() => {
     if (mode !== 'Turn') return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        goToPrevPage();
+        e.preventDefault(); goToPrevPage();
       } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        goToNextPage();
+        e.preventDefault(); goToNextPage();
       } else if (e.key === 'Home') {
-        e.preventDefault();
-        goToPage(0);
+        e.preventDefault(); goToPage(0);
       } else if (e.key === 'End') {
-        e.preventDefault();
-        goToPage(totalPages - 1);
+        e.preventDefault(); goToPage(totalPages - 1);
       }
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    const element = contentRef.current;
+    element?.addEventListener('keydown', handleKeyDown);
+    return () => element?.removeEventListener('keydown', handleKeyDown);
   }, [mode, goToPrevPage, goToNextPage, goToPage, totalPages]);
 
-  // --- Render ---
+  // JSX Render
   return (
-    <div className={`realtime-preview-container ${containerClassName} ${mode}`}>
-      
-      {/* 1. Title Bar */}
-      <div className={`title-container`}>
-        <h3 className='title'>{title}</h3>
+    <div
+      className={`realtime-preview-container ${containerClassName} ${mode}`}
+    >
+      <div className="title-container">
+        <h3 className="title">{title}</h3>
       </div>
 
-      {/* 2. Content Area (The part that scrolls) */}
-        <div 
+      <div
         ref={contentRef}
         className="preview-content-area"
-        style={{ overflowY: mode === 'Turn' ? 'hidden' : 'auto' }}
         role="article"
         aria-label="Document content"
+        tabIndex={mode === 'Turn' ? 0 : -1}
       >
-        <div 
+        <div
           className={`realtime-preview-page ${pageClassName}`}
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
       </div>
-      
-      {/* 3. Pagination Controls (Only in "Turn" mode) */}
+
       {mode === 'Turn' && (
         <div className="pagination-controls" role="navigation" aria-label="Page navigation">
-          <button 
-            onClick={goToPrevPage} 
-            disabled={currentPage === 0}
+          <button
+            onClick={goToPrevPage}
+            disabled={currentPage === 0 || !isFinalized}
             aria-label="Previous page"
             title="Previous page (← or ↑)"
           >
             ← Prev
           </button>
-          <span aria-live="polite" aria-atomic="true">
-            Page {currentPage + 1} of {totalPages}
+          <span className="page-indicator" aria-live="polite" aria-atomic="true">
+            {isFinalized
+              ? `Page ${currentPage + 1} of ${totalPages}`
+              : 'Streaming...'
+            }
           </span>
-          <button 
-            onClick={goToNextPage} 
-            disabled={currentPage >= totalPages - 1}
+          <button
+            onClick={goToNextPage}
+            disabled={currentPage >= totalPages - 1 || !isFinalized}
             aria-label="Next page"
             title="Next page (→ or ↓)"
           >

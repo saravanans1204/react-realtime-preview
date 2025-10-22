@@ -1,258 +1,377 @@
-/* 
- * Modern Light Mode Theme
- */
-
 .realtime-preview-container {
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: #333333;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    height: 80vh;
-    width: 60vw;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  height: 80vh;
+  width: 60vw;
+  max-width: 1000px;
+  min-width: 320px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+/* --- Title --- */
 .title-container {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    margin-bottom: 1.5rem;
-    flex-shrink: 0;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .title {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #666666;
-    text-align: left;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: none;
-    padding-bottom: 0;
-    width: auto;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #666666;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: none;
+  padding-bottom: 0;
+  width: auto;
+  margin: 0;
 }
 
+/* --- Content Area --- */
 .preview-content-area {
-    flex-grow: 1; 
-    overflow-y: auto; /* Default for 'scroll' mode */
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.preview-content-area:focus {
+  outline: none;
 }
 
 .realtime-preview-page {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: #222222;
-    padding: 0.8rem; 
-    text-align: left;
-     white-space: pre-wrap;
-    word-wrap: break-word;
+  font-family: 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #222222;
+  padding: 0.6rem;
+  text-align: left;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
+/* --- CODE BLOCK STYLES (For Syntax Highlighting) --- */
+.realtime-preview-page pre {
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 12px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
 
-/* =================================================== */
+.realtime-preview-page pre code {
+  background-color: transparent !important;
+  padding: 0;
+  border-radius: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: inherit;
+  display: block;
+}
 
+/* Inline code */
+.realtime-preview-page code.inline-code,
+.realtime-preview-page :not(pre) > code {
+  background-color: rgba(175, 184, 193, 0.2);
+  padding: 0.15em 0.3em;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85em;
+  color: #e83e8c;
+  font-weight: 500;
+}
 
+/* --- Pagination --- */
 .pagination-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e0e0e0;
-    flex-shrink: 0;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: #555;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.9rem;
+  color: #333;
+  gap: 0.8rem;
+}
+
+.pagination-controls .page-indicator {
+  font-weight: 600;
+  color: #111;
+  min-width: 120px;
+  text-align: center;
+  font-size: 0.9rem;
 }
 
 .pagination-controls button {
-    background-color: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  background-color: #f8f9fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #24292f;
+  min-width: 80px;
 }
 
-.pagination-controls button:hover {
-    background-color: #e9e9e9;
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+  transform: translateY(-1px);
+}
+
+.pagination-controls button:active:not(:disabled) {
+  background-color: #dee2e6;
+  transform: translateY(0);
 }
 
 .pagination-controls button:disabled {
-    background-color: #f9f9f9;
-    color: #aaa;
-    cursor: not-allowed;
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+  border-color: #e5e7eb;
 }
 
-/* Scrollbar Styles */
+/* --- Scrollbar --- */
 .preview-content-area {
   scrollbar-width: thin;
   scrollbar-color: #c1c1c1 #ffffff;
 }
 
 .preview-content-area::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 .preview-content-area::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .preview-content-area::-webkit-scrollbar-thumb {
   background: #c1c1c1;
-  border-radius: 10px;
-  border: 3px solid #f1f1f1;
+  border-radius: 8px;
+  border: 2px solid #f1f1f1;
 }
 
 .preview-content-area::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
 
-/* /////////////////////Inlined ///////////////////////// */
+/* --- Markdown Typography Styles --- */
+.realtime-preview-page h1 {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.8em;
+  font-weight: 900;
+  margin: 1em 0 0.3em 0;
+  color: #111;
+  line-height: 1.2;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.2em;
+  letter-spacing: -0.02em;
+}
 
+.realtime-preview-page h2 {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.4em;
+  font-weight: 700;
+  margin: 0.8em 0 0.2em 0;
+  color: #222;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
 
- .realtime-preview-page h1 {
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 2em;
-    font-weight: 900;
-    margin: 1.2em 0 0.6em 0;
-    color: #111;
-    line-height: 1.3;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 0.3em;
-    letter-spacing: -0.02em;
+.realtime-preview-page h3 {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0.6em 0 0.15em 0;
+  color: #333;
+  line-height: 1.4;
+}
+
+.realtime-preview-page h4,
+.realtime-preview-page h5,
+.realtime-preview-page h6 {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  margin: 0.5em 0 0.1em 0;
+  color: #444;
+}
+
+.realtime-preview-page ul,
+.realtime-preview-page ol {
+  margin: 0.07em 0;
+  padding-left: 1.2em;
+}
+
+.realtime-preview-page li {
+  margin: 0.1em 0;
+  line-height: 1.3;
+}
+
+.realtime-preview-page p {
+  margin: 0.1em 0;
+  line-height: 1.4em;
+}
+
+.realtime-preview-page strong {
+  font-weight: 600;
+  color: #111;
+}
+
+.realtime-preview-page blockquote {
+  border-left: 4px solid #dfe2e5;
+  padding-left: 0.8em;
+  margin: 0.8em 0;
+  color: #6a737d;
+  font-style: italic;
+}
+
+.realtime-preview-page hr {
+  border: none;
+  border-top: 2px solid #e1e4e8;
+  margin: 1.5em 0;
+}
+
+.realtime-preview-page a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.realtime-preview-page a:hover {
+  text-decoration: underline;
+}
+
+.realtime-preview-page br {
+  display: block;
+  content: "";
+  margin-top: 0.2em;
+}
+
+/* --- Table Styles --- */
+.realtime-preview-page table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8em 0;
+  background-color: #ffffff;
+}
+
+.realtime-preview-page th,
+.realtime-preview-page td {
+  border: 1px solid #e0e0e0;
+  padding: 0.5em;
+  text-align: left;
+}
+
+.realtime-preview-page th {
+  background-color: #f6f8fa;
+  font-weight: 600;
+  color: #222;
+}
+
+.realtime-preview-page tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.realtime-preview-page tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* --- Responsive Media Queries --- */
+@media (max-width: 768px) {
+  .realtime-preview-container {
+    width: 90%;
+    height: 85vh;
+    padding: 1rem;
   }
 
-  .realtime-preview-page h2 {
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.5em;
-    font-weight: 700;
-    margin: 1em 0 0.5em 0;
-    color: #222;
-    line-height: 1.4;
-    letter-spacing: -0.01em;
+  .title-container {
+    margin-bottom: 0.8rem;
   }
 
-  .realtime-preview-page h3 {
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.25em;
-    font-weight: 700;
-    margin: 0.8em 0 0.4em 0;
-    color: #333;
-    line-height: 1.5;
+  .realtime-preview-page {
+    font-size: 0.8rem;
+    padding: 0.3rem;
   }
 
-  .realtime-preview-page h4 {
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1.1em;
-    font-weight: 700;
-    margin: 0.7em 0 0.3em 0;
-    color: #444;
+  .realtime-preview-page h1 { font-size: 1.6em; }
+  .realtime-preview-page h2 { font-size: 1.3em; }
+  .realtime-preview-page h3 { font-size: 1.15em; }
+
+  .pagination-controls {
+    padding-top: 0.8rem;
+    font-size: 0.8rem;
   }
 
-  .realtime-preview-page h5,
-  .realtime-preview-page h6 {
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 1em;
-    font-weight: 700;
-    margin: 0.6em 0 0.3em 0;
-    color: #555;
+  .pagination-controls button {
+    padding: 0.4rem 0.6rem;
+    min-width: 70px;
   }
 
-  .realtime-preview-page ul,
-  .realtime-preview-page ol {
-    margin: 0.5em 0;
-    padding-left: 2em;
+  .pagination-controls .page-indicator {
+    min-width: 100px;
   }
 
-  .realtime-preview-page ul {
-    list-style-type: disc;
+  .realtime-preview-page th,
+  .realtime-preview-page td {
+    padding: 0.4em;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .realtime-preview-container {
+    width: 95%;
+    height: 88vh;
+    padding: 0.8rem 0.4rem;
   }
 
-  .realtime-preview-page ol {
-    list-style-type: decimal;
+  .title {
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
   }
 
-  .realtime-preview-page li {
-    margin: 0.2em 0;
-    line-height: 1.5;
+  .realtime-preview-page {
+    font-size: 0.75rem;
+    padding: 0.15rem;
   }
 
-  .realtime-preview-page li > ul,
-  .realtime-preview-page li > ol {
-    margin: 0.15em 0;
+  .realtime-preview-page h1 { font-size: 1.4em; }
+  .realtime-preview-page h2 { font-size: 1.2em; }
+  .realtime-preview-page h3 { font-size: 1.1em; }
+
+  .pagination-controls {
+    font-size: 0.75rem;
+    padding-top: 0.6rem;
   }
 
-  .realtime-preview-page p {
-    margin: 0.4em 0;
-    line-height: 1.6;
+  .pagination-controls button {
+    padding: 0.3rem 0.5rem;
+    min-width: 60px;
   }
 
-  .realtime-preview-page strong {
-    font-weight: 600;
-    color: #111;
+  .pagination-controls .page-indicator {
+    min-width: 90px;
   }
 
-  .realtime-preview-page em {
-    font-style: italic;
+  .realtime-preview-page th,
+  .realtime-preview-page td {
+    padding: 0.2em;
+    font-size: 0.7rem;
   }
-
-  .realtime-preview-page code {
-    background-color: #f5f5f5;
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
-    font-size: 0.9em;
-    color: #d73a49;
-  }
-
-  .realtime-preview-page pre {
-    background-color: #f6f8fa;
-    border: 1px solid #e1e4e8;
-    border-radius: 6px;
-    padding: 1em;
-    margin: 1em 0;
-    overflow-x: auto;
-  }
-
-  .realtime-preview-page pre code {
-    background-color: transparent;
-    padding: 0;
-    color: #24292e;
-    font-size: 0.85em;
-  }
-
-  .realtime-preview-page blockquote {
-    border-left: 4px solid #dfe2e5;
-    padding-left: 1em;
-    margin: 1em 0;
-    color: #6a737d;
-    font-style: italic;
-  }
-
-  .realtime-preview-page hr {
-    border: none;
-    border-top: 2px solid #e1e4e8;
-    margin: 2em 0;
-  }
-
-  .realtime-preview-page a {
-    color: #0366d6;
-    text-decoration: none;
-  }
-
-  .realtime-preview-page a:hover {
-    text-decoration: underline;
-  }
-
-  .realtime-preview-page br {
-    display: block;
-    content: "";
-    margin-top: 0.3em;
-  }
+}
