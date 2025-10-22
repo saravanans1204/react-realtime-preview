@@ -1,17 +1,20 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "declaration": true, // Generate .d.ts files
-    "outDir": "./dist", // Output directory for compiled files
+    "target": "ES2022",
+    "module": "ESNext",
+    "declaration": true, // Must be present to generate .d.ts
+    "outDir": "./dist",
+    "rootDir": "src",
     "strict": true,
-    "jsx": "react-jsx", // For React with modern JSX
+    "jsx": "react-jsx",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true
+    // "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
-  "include": ["src/**/*"], // Include all files in the src directory
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx"] // Exclude unnecessary files
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx"]
 }

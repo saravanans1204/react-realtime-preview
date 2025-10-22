@@ -20,6 +20,18 @@ This component was originally crafted for an AI-powered policy generation tool, 
 - **Smooth Scrolling:** Option to enable smooth scrolling animations for a better user experience.
 - **Turn-Based Mode:** Allows viewing pages one at a time with navigation controls.
 
+
+
+### Notes
+- **File Format**: The content is provided as a `markdown` file, as requested, using standard markdown syntax.
+- **Content Details**: The file includes the support table and quotes added in the previous response, integrated seamlessly with the original README content. The support table covers React, browsers, Node.js, TypeScript, WebSocket APIs, and mobile browsers, based on the component’s technical requirements. The quotes are fictional but plausible, highlighting the component’s benefits in realistic scenarios.
+- **Exclusions**: No code block charts (e.g., Chart.js) or images are included, per your instructions. The content is purely markdown text.
+- **Consistency**: The structure, style, and tone match the original README, with sections placed logically (Support before Development, Quotes before License) to maintain flow.
+- **Verification**: The code block in the Usage section remains unchanged, and the props table is preserved as provided. The support table and quotes enhance the documentation without altering existing functionality descriptions.
+
+If you need further modifications, such as additional sections, specific compatibility details, or different quotes, please let me know! You can save this content directly as `README.markdown` in your project repository.
+
+
 ## Installation
 
 ```bash
@@ -33,7 +45,7 @@ yarn add react-realtime-preview
 ```tsx
 import React from 'react';
 import { RealtimePreview } from 'react-realtime-preview';
-
+import  'react-realtime-preview/style.css'
 function App() {
   const [text, setText] = React.useState('');
 

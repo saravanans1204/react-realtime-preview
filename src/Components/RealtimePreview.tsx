@@ -107,10 +107,10 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   // Auto-scroll during streaming
   useEffect(() => {
     const element = contentRef.current;
-    if (element && !isFinalized && mode === 'scroll') {
-      element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' });
+    if (element && !isFinalized && !isManualScrolling.current) {
+      element.scrollTo({ top: element.scrollHeight, behavior: smoothScroll ? 'smooth' : 'auto' });
     }
-  }, [htmlContent, mode, isFinalized]);
+  }, [htmlContent, isFinalized, smoothScroll]);
 
   // Virtual scroll-to-page only on navigation
   useEffect(() => {
@@ -118,8 +118,8 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
       const pageHeight = contentRef.current.clientHeight;
       contentRef.current.scrollTo({
         top: currentPage * pageHeight,
-        behavior: smoothScroll ? 'smooth' : 'auto'
-      });
+        behavior: smoothScroll ? 'smooth' : 'auto'}
+      );
 
       const scrollTimer = setTimeout(() => {
         isButtonScrolling.current = false;
