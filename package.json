@@ -1,6 +1,6 @@
 {
   "name": "react-realtime-preview",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A React component for rendering live, streaming text,and normal text content with simulated pagination",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
@@ -10,7 +10,8 @@
   ],
   "exports": {
     ".": {
-     
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
       "types": "./dist/index.d.ts"
     },
     "./style.css": "./dist/react-realtime-preview.css"
