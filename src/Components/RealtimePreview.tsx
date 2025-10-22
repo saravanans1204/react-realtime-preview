@@ -40,13 +40,13 @@ export interface RealtimePreviewProps {
   /** Callback fired when page changes in turn mode */
   onPageChange?: (page: number, totalPages: number) => void;
 
-  /** Enable smooth scrolling animations. Defaults to false. */
+  /** Enable smooth scrolling animations. Defaults to true. */
   smoothScroll?: boolean;
 }
 
 // --- Debounce Constants ---
 const FINALIZE_DEBOUNCE_MS = 500;
-const SCROLL_DEBOUNCE_MS = 150;
+const SCROLL_DEBOUNCE_MS = 300;
 
 // --- Component ---
 export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
@@ -63,14 +63,15 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   const [isFinalized, setIsFinalized] = useState(false);
   const [md, setMd] = useState<MarkdownIt | null>(null);
   const isButtonScrolling = useRef(false);
+  const isManualScrolling = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Initialize MarkdownIt with Shiki asynchronously, loading specific languages
   useEffect(() => {
     const initMd = async () => {
       const shikiPlugin = await Shiki({
-        theme: 'github-light', // Matches the previous github.css aesthetic
-        langs: ['xml', 'css', 'javascript'], // Load required languages
+        theme: 'github-light',
+        langs: ['xml', 'css', 'javascript'],
       });
       const markdown = MarkdownIt({
         html: true,
@@ -95,7 +96,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
       setIsFinalized(true);
 
       if (mode === 'Turn' && contentRef.current) {
-        contentRef.current.scrollTo({ top: 0 });
+        contentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         setCurrentPage(0);
       }
     }, FINALIZE_DEBOUNCE_MS);
@@ -106,16 +107,14 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   // Auto-scroll during streaming
   useEffect(() => {
     const element = contentRef.current;
-    if (element && !isFinalized) {
-      element.scrollTop = element.scrollHeight;
+    if (element && !isFinalized && mode === 'scroll') {
+      element.scrollTo({ top: element.scrollHeight, behavior: 'smooth' });
     }
   }, [htmlContent, mode, isFinalized]);
 
-  // Virtual scroll-to-page
+  // Virtual scroll-to-page only on navigation
   useEffect(() => {
-    if (mode === 'Turn' && isFinalized && contentRef.current) {
-      isButtonScrolling.current = true;
-
+    if (mode === 'Turn' && isFinalized && contentRef.current && isButtonScrolling.current) {
       const pageHeight = contentRef.current.clientHeight;
       contentRef.current.scrollTo({
         top: currentPage * pageHeight,
@@ -139,14 +138,18 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
     const handleScroll = () => {
       if (isButtonScrolling.current) return;
 
+      isManualScrolling.current = true;
+
       clearTimeout(debounceTimer);
       debounceTimer = window.setTimeout(() => {
         const pageHeight = element.clientHeight;
         const scrollTop = element.scrollTop;
-        const calculatedPage = Math.round(scrollTop / pageHeight);
+        const threshold = pageHeight * 0.2;
+        const calculatedPage = Math.round((scrollTop + threshold) / pageHeight);
 
-        setCurrentPage(calculatedPage);
-
+        if (calculatedPage !== currentPage) {
+          setCurrentPage(calculatedPage);
+        }
       }, SCROLL_DEBOUNCE_MS);
     };
 
@@ -155,7 +158,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
       element.removeEventListener('scroll', handleScroll);
       clearTimeout(debounceTimer);
     };
-  }, [mode, isFinalized]);
+  }, [mode, isFinalized, currentPage]);
 
   // Page calculation with ResizeObserver
   useEffect(() => {
@@ -184,14 +187,17 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
 
   // Navigation handlers
   const goToPrevPage = useCallback(() => {
+    isButtonScrolling.current = true;
     setCurrentPage(prev => Math.max(0, prev - 1));
   }, []);
 
   const goToNextPage = useCallback(() => {
+    isButtonScrolling.current = true;
     setCurrentPage(prev => Math.min(totalPages - 1, prev + 1));
   }, [totalPages]);
 
   const goToPage = useCallback((page: number) => {
+    isButtonScrolling.current = true;
     setCurrentPage(Math.max(0, Math.min(totalPages - 1, page)));
   }, [totalPages]);
 
